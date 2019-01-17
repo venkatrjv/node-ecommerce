@@ -1,11 +1,18 @@
 var db = require('../connection/dbconnection'); //reference of dbconnection.js
 
 var products = {
-    getAllProducts: function (data, callback) {
-        return db.query("call spGetAllProducts(?,?,?,?,?,?)", [data.actionMode, data.parameter1, data.parameter2, data.parameter3, data.parameter4, data.parameter5], callback)
+    getAllProducts: function (callback) {
+        return db.query("select * from products where status = 1", [], callback)
+    },
+    getAllCategory: function (data, callback) {
+        return db.query("select * from categories where status = 1", [], callback)
     },
     getProductById: function (data, callback) {
-        return db.query("call spGetProductById(?,?,?,?,?,?)", [data.actionMode, data.parameter1, data.parameter2, data.parameter3, data.parameter4, data.parameter5], callback)
+        return db.query("select * from products where id = ? ", [data.id], callback)
+    },
+    getProductByCategoryID: function (data, callback) {
+        return db.query("select * from products where category_id = ? and status = 1", [data.id], callback)
     }
 };
+
 module.exports = products;

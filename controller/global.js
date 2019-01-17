@@ -64,7 +64,7 @@ getOperation = (res, rows) => {
             "message": "Requested parameter mismatch"
         });
     } else {
-        return res.json(rows[0]);
+        return res.json(rows);
     }
 }
 
