@@ -10,7 +10,6 @@ var global = require('./global');
 
 
 router.get('/', function (req, res, next) {
-    debugger;
     orders.getAllOrders(req.body, function (err, rows) {
         if (err) {
             return next(err);
@@ -21,7 +20,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/:id?', function (req, res, next) {
-    orders.getOrderByID(req.body, function (err, rows) {
+    orders.getOrderByID(req.params, function (err, rows) {
         if (err) {
             return next(err);
         } else {
@@ -31,7 +30,7 @@ router.get('/:id?', function (req, res, next) {
 });
 
 router.get('/getOrderDetailsByID/:id?', function (req, res, next) {
-    orders.getOrderDetailsByID(req.body, function (err, rows) {
+    orders.getOrderDetailsByID(req.params, function (err, rows) {
         if (err) {
             return next(err);
         } else {
@@ -58,17 +57,23 @@ router.post('/addOrder', function (req, res, next) {
 });
 
 router.post('/addOrderDetails', function (req, res, next) {
-    var count = 0;
-    req.body.forEach(order => {
-        orders.addOrderDetails(order, function (err, rows) {
-            count++;
-            if (err) {
-                return next(err);
-            } else {
-                if (count == req.body.length)
-                    return global.postOperation(res, rows);
-            }
-        });
+    orders.deleteOrder(req.body, function (err, rows) {
+        if (err) {
+            return next(err);
+        } else {
+            var count = 0;
+            req.body.products.forEach(order => {
+                orders.addOrderDetails(order, function (err, rows) {
+                    count++;
+                    if (err) {
+                        return next(err);
+                    } else {
+                        if (count == req.body.products.length)
+                            return global.postOperation(res, rows);
+                    }
+                });
+            });
+        }
     });
 });
 
@@ -80,13 +85,27 @@ router.post('/addOrderDetails', function (req, res, next) {
 //#region   :::::: U P D A T E : :  :   :    :     :        :          :
 
 router.put('/updateOrder', function (req, res, next) {
-    orders.updateOrder(req.body, function (err, rows) {
+    orders.getOrderByID(req.body, function (err, rows) {
         if (err) {
             return next(err);
         } else {
-            res.json(rows);
+            if (rows.is_approved === 0) {
+                orders.updateOrder(req.body, function (err, rows) {
+                    if (err) {
+                        return next(err);
+                    } else {
+                        res.json(rows);
+                    }
+                });
+            } else {
+                return res.status(400).json({
+                    "status": 400,
+                    "message": "Order already approved"
+                });
+            }
         }
     });
+
 });
 
 router.put('/updateOrderApproved/:id', function (req, res, next) {
