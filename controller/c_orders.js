@@ -9,7 +9,7 @@ var global = require('./global');
 
 
 
-router.get('/', function (req, res, next) {
+router.post('/', function (req, res, next) {
     orders.getAllOrders(req.body, function (err, rows) {
         if (err) {
             return next(err);
@@ -34,7 +34,7 @@ router.get('/getOrderDetailsByID/:id?', function (req, res, next) {
         if (err) {
             return next(err);
         } else {
-            return global.getOperationSingle(res, rows);
+            return global.getOperation(res, rows);
         }
     });
 });
@@ -47,7 +47,7 @@ router.get('/getOrderDetailsByID/:id?', function (req, res, next) {
 //#region   :::::: A D D : :  :   :    :     :        :          :
 
 router.post('/addOrder', function (req, res, next) {
-    orders.addOrder(req.body, function (err, rows) {
+    orders.addOrder(req.body.order, function (err, rows) {
         if (err) {
             return next(err);
         } else {
@@ -57,18 +57,18 @@ router.post('/addOrder', function (req, res, next) {
 });
 
 router.post('/addOrderDetails', function (req, res, next) {
-    orders.deleteOrder(req.body, function (err, rows) {
+    orders.deleteOrderDetails(req.body, function (err, rows) {
         if (err) {
             return next(err);
         } else {
             var count = 0;
-            req.body.products.forEach(order => {
+            req.body.data.forEach(order => {
                 orders.addOrderDetails(order, function (err, rows) {
                     count++;
                     if (err) {
                         return next(err);
                     } else {
-                        if (count == req.body.products.length)
+                        if (count == req.body.data.length)
                             return global.postOperation(res, rows);
                     }
                 });
