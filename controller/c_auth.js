@@ -23,7 +23,7 @@ router.post('/validate', function (req, res, next) {
     }
 });
 
-router.post('/', function (req, res, next) {
+router.post('/addUser', function (req, res, next) {
     auth.addUser(req.body, function (err, rows) {
         if (err) {
             return next(err);

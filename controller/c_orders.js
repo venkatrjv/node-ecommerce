@@ -39,6 +39,16 @@ router.get('/getOrderDetailsByID/:id?', function (req, res, next) {
     });
 });
 
+router.post('/getUnApprovedOrders', function (req, res, next) {
+    orders.getUnApprovedOrders(function (err, rows) {
+        if (err) {
+            return next(err);
+        } else {
+            return global.getOperation(res, rows);
+        }
+    });
+});
+
 //#endregion ────────────────────────────────────────────────────────
 //
 
@@ -108,7 +118,7 @@ router.put('/updateOrder', function (req, res, next) {
 
 });
 
-router.put('/updateOrderApproved/:id', function (req, res, next) {
+router.put('/updateOrderApproved', function (req, res, next) {
     orders.updateOrderApproved(req.body, function (err, rows) {
         if (err) {
             return next(err);
