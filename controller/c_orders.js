@@ -95,22 +95,29 @@ router.post('/addOrderDetails', function (req, res, next) {
 //#region   :::::: U P D A T E : :  :   :    :     :        :          :
 
 router.put('/updateOrder', function (req, res, next) {
-    orders.getOrderByID(req.body, function (err, rows) {
+    orders.getOrderByID(req.body.order, function (err, rows) {
         if (err) {
             return next(err);
         } else {
-            if (rows.is_approved === 0) {
-                orders.updateOrder(req.body, function (err, rows) {
-                    if (err) {
-                        return next(err);
-                    } else {
-                        res.json(rows);
-                    }
-                });
-            } else {
+            if (rows.length > 0) {
+                if (rows[0].is_approved === 0) {
+                    orders.updateOrder(req.body.order, function (err, rows) {
+                        if (err) {
+                            return next(err);
+                        } else {
+                            res.json(rows);
+                        }
+                    });
+                } else {
+                    return res.status(400).json({
+                        "status": 400,
+                        "message": "Order already approved"
+                    });
+                }
+            }else{
                 return res.status(400).json({
                     "status": 400,
-                    "message": "Order already approved"
+                    "message": "Order not found"
                 });
             }
         }
@@ -127,6 +134,18 @@ router.put('/updateOrderApproved', function (req, res, next) {
         }
     });
 });
+
+router.put('/updateOrderRejected', function (req, res, next) {
+    orders.updateOrderRejected(req.body, function (err, rows) {
+        if (err) {
+            return next(err);
+        } else {
+            res.json(rows);
+        }
+    });
+});
+
+
 
 router.put('/updateOrderDetails', function (req, res, next) {
     orders.updateOrderDetails(req.body, function (err, rows) {

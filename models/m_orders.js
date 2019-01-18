@@ -17,10 +17,13 @@ var orders = {
         return db.query("Insert into sales_orders values(0, NOW(), ?, ?, ?, NOW(),NULL, ?)", [Number(order.total), 0, order.userID, 1], callback);
     },
     updateOrder: function (order, callback) {
-        return db.query("update sales_orders set total = ?, updated_at = NOW() where id = ?", [order.total, 0, order.id], callback);
+        return db.query("update sales_orders set total = ?, updated_at = NOW() where id = ?", [order.total, order.id], callback);
     },
     updateOrderApproved: function (order, callback) {
         return db.query("update sales_orders set is_approved = 1, updated_at = NOW() where id = ?", [order.id], callback);
+    },
+    updateOrderRejected: function (order, callback) {
+        return db.query("update sales_orders set is_approved = 2, updated_at = NOW() where id = ?", [order.id], callback);
     },
     deleteOrder: function (data, callback) {
         return db.query("update sales_orders set status = 0 where id=?", [data.id], callback);
